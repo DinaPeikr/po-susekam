@@ -108,8 +108,3 @@ Binding Workers AI берётся из `wrangler.toml`.
   (запись, Brave, тишина) пройдены.
 
 План сборки и замеры репетиций — в [`EXAM-PLAYBOOK.pdf`](EXAM-PLAYBOOK.pdf).
-
-## Автор
-
-Диана Пейкришвили — frontend-разработчик (7 лет), разработка с Claude Code: `CLAUDE.md`, скиллы, агенты,
-Cloudflare Workers.
