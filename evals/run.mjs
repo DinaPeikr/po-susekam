@@ -1,17 +1,42 @@
-// Evals для /api/recipes: гоняет кейсы через тот же onRequestPost, что работает в проде,
-// и проверяет ответы кодом. Запуск: npm run eval -- [--runs 3] [--only камни] [--concurrency 4]
+// Evals для /api/recipes и /api/recognize: гоняет кейсы через те же onRequestPost, что работают в проде,
+// и проверяет ответы кодом. Запуск: npm run eval -- [--suite recognize] [--runs 3] [--only камни] [--concurrency 4]
 // --rescore — перепроверить ответы последнего прогона без вызова API (после правки checks.mjs)
 // Результат — таблица «проверка: прошло/всего», стоимость прогона и разница с прошлым прогоном.
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { onRequestPost } from '../functions/api/recipes.js';
-import { cases } from './cases.mjs';
-import { runChecks } from './checks.mjs';
+import * as recipesApi from '../functions/api/recipes.js';
+import * as recognizeApi from '../functions/api/recognize.js';
+import * as recipesChecks from './checks.mjs';
+import * as recipesCases from './cases.mjs';
+import * as recognizeChecks from './recognize-checks.mjs';
+import * as recognizeCases from './recognize-cases.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const resultsDir = join(root, 'evals', 'results');
+const evalsDir = join(root, 'evals');
+
+const MEDIA = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif' };
+
+// Набор = обработчик + кейсы + проверки + как из кейса собрать тело запроса
+const suites = {
+  recipes: {
+    handler: recipesApi.onRequestPost,
+    cases: recipesCases.cases,
+    runChecks: recipesChecks.runChecks,
+    body: (c) => ({ ingredients: c.ingredients, exclude: c.exclude }),
+  },
+  recognize: {
+    handler: recognizeApi.onRequestPost,
+    cases: recognizeCases.cases,
+    runChecks: recognizeChecks.runChecks,
+    body: (c) => {
+      if (c.text) return { text: c.text };
+      const ext = c.image.slice(c.image.lastIndexOf('.')).toLowerCase();
+      return { image: readFileSync(join(evalsDir, c.image)).toString('base64'), mediaType: MEDIA[ext] };
+    },
+  },
+};
 
 // Цена claude-sonnet-5 за 1M токенов
 const PRICE = { input: 2, output: 10 };
@@ -25,6 +50,12 @@ const runs = Number(arg('runs', 1));
 const concurrency = Number(arg('concurrency', 4));
 const only = arg('only', '');
 const rescore = args.includes('--rescore');
+const suiteName = arg('suite', 'recipes');
+const suite = suites[suiteName];
+if (!suite) throw new Error(`Нет набора ${suiteName}: ${Object.keys(suites).join(', ')}`);
+const { cases, runChecks } = suite;
+// Свой каталог на набор — чтобы колонка «Было» сравнивала recognize с recognize
+const resultsDir = join(evalsDir, 'results', suiteName);
 
 // Ключи и переменные — как у wrangler: .dev.vars + [vars] из wrangler.toml
 const env = { RECIPES_COUNT: '6', SEARCH_ROUNDS: '2' };
@@ -48,11 +79,11 @@ async function runOne(testCase, run) {
   const store = { usage: null };
   const started = Date.now();
   const response = await context.run(store, async () => {
-    const request = new Request('http://local/api/recipes', {
+    const request = new Request(`http://local/api/${suiteName}`, {
       method: 'POST',
-      body: JSON.stringify({ ingredients: testCase.ingredients, exclude: testCase.exclude }),
+      body: JSON.stringify(suite.body(testCase)),
     });
-    const res = await onRequestPost({ request, env });
+    const res = await suite.handler({ request, env });
     return { status: res.status, body: await res.json() };
   });
   return {
@@ -97,7 +128,7 @@ if (rescore) {
 } else {
   const selected = cases.filter((c) => c.id.includes(only));
   const tasks = selected.flatMap((c) => Array.from({ length: runs }, (_, run) => () => runOne(c, run + 1)));
-  log(`Кейсов: ${selected.length}, прогонов на кейс: ${runs}, запросов: ${tasks.length}`);
+  log(`Набор: ${suiteName}. Кейсов: ${selected.length}, прогонов на кейс: ${runs}, запросов: ${tasks.length}`);
   results = await pool(tasks, concurrency);
 }
 
@@ -149,4 +180,4 @@ log(`Время ответа: медиана ${seconds[Math.floor(seconds.length
 const summary = Object.fromEntries(Object.entries(byCheck).map(([name, s]) => [name, { pass: s.pass, total: s.total }]));
 const file = join(resultsDir, `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
 writeFileSync(file, JSON.stringify({ runs: rescore ? previousRun.runs : runs, only, rescored: rescore ? previousFile : undefined, tokens, cost, summary, results }, null, 2));
-log(`Сохранено: evals/results/${file.split(/[\\/]/).pop()}`);
+log(`Сохранено: evals/results/${suiteName}/${file.split(/[\\/]/).pop()}`);
