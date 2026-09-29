@@ -1,0 +1,123 @@
+// Стили IngredientInput из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <div class="ingredients" :class="{ 'is-disabled': disabled, 'has-items': modelValue.length }">
+//     <div class="ingredients__body">
+//       <ul v-if="modelValue.length" class="ingredients__list">
+//         <li v-for="(item, index) in modelValue" class="chip">
+//           <button class="chip__remove">
+//       <input class="ingredients__input">
+//     <div v-if="$slots.actions" class="ingredients__actions">
+//       <slot name="actions">
+
+.ingredients {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 44px;
+  padding: 5px 5px 5px 18px;
+  border-radius: 22px;
+  background: $color-cream;
+
+  @include mobile {
+    padding-left: 16px;
+  }
+
+  // Бледнеет только список: кнопки в actions сами решают, как выглядеть, — идущая запись должна быть заметна
+  &.is-disabled &__body {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:focus-within {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 34px;
+    cursor: text;
+  }
+
+  &__actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+  }
+
+  // На телефоне иконки отнимают у чипсов полширины и те встают по одному в строку.
+  // Когда продукты есть, чипсы занимают всю ширину, а иконки уходят в нижний ряд справа
+  @include mobile {
+    &.has-items {
+      flex-wrap: wrap;
+    }
+
+    &.has-items &__body {
+      flex-basis: 100%;
+    }
+
+    &.has-items &__actions {
+      margin: -4px 0 0 auto;
+    }
+  }
+
+  &__list {
+    display: contents;
+  }
+
+  &__input {
+    flex: 1;
+    // У input своя ширина по атрибуту size (~230 px) — обнуляем, чтобы поле сжималось до min-width
+    width: 0;
+    min-width: 140px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    font: 400 15px $font-base;
+    color: $color-neutral-800;
+    outline: none;
+
+    &::placeholder {
+      color: $color-neutral-400;
+    }
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 3px 3px 10px;
+  border-radius: 14px;
+  background: $color-black;
+  font-size: 13px;
+  line-height: 1.2;
+  color: $color-accent;
+
+  &__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 16px;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: rgba($color-accent, 0.2);
+    }
+  }
+}

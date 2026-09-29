@@ -1,0 +1,223 @@
+// Стили RecipeSearch из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <section class="search-panel">
+//     <h1 class="search-panel__title">
+//     <p class="search-panel__hint">
+//     <form class="search-panel__form">
+//       <IngredientInput>
+//         <button v-if="modelValue.length" class="search-panel__icon">
+//           <svg viewBox="0 0 24 24"> <path d="M6 6l12 12M18 6L6 18" /> </svg>
+//         <label class="search-panel__icon" :class="{ 'is-disabled': busy }">
+//           <input class="visually-hidden">
+//           <svg viewBox="0 0 24 24"> <path d="M4 8a2 2 0 0 1 2-2h1.6l1.4-2h6l1.4 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /> <circle cx="12" cy="12.5" r="3.5" /> </svg>
+//         <button v-if="speechSupported" class="search-panel__icon" :class="{ 'is-listening': listening }">
+//           <svg viewBox="0 0 24 24"> <rect x="9" y="3" width="6" height="11" rx="3" /> <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /> </svg>
+//       <button class="search-panel__button">
+//         <span v-if="loading" class="search-panel__spinner">
+//     <p v-if="listening || transcript" class="search-panel__transcript">
+//     <div v-else-if="photoPreview" class="search-panel__preview">
+//       <img>
+//       <span v-if="recognizing">
+//       <span v-else>
+//     <div v-if="!modelValue.length && !busy" class="search-panel__examples">
+//       <button v-for="example in examples" class="search-panel__example">
+//     <p class="search-panel__status" :class="{ 'is-error': error }">
+
+.search-panel {
+  // content-column задаёт width: 100% — без него панель в колонке .home с margin: auto
+  // сжимается по содержимому и на телефоне вылезает за экран
+  @include content-column;
+  padding-top: 20px;
+  color: $color-cream;
+
+  @include mobile {
+    padding-top: 16px;
+  }
+
+  &__title {
+    font-family: $font-logo;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: $color-accent;
+
+    @include mobile {
+      font-size: 22px;
+    }
+  }
+
+  &__hint {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: rgba($color-cream, 0.8);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  // Иконки камеры и микрофона внутри светлого поля
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: $color-neutral-800;
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    // Только для мыши: на телефоне :hover «залипает» после тапа и перебивал фон записи
+    @media (hover: hover) {
+      &:hover:not(.is-disabled, :disabled) {
+        background: rgba($color-maroon, 0.08);
+      }
+    }
+
+    &:focus-visible,
+    &:focus-within {
+      outline: 2px solid $color-maroon;
+      outline-offset: -2px;
+    }
+
+    &.is-disabled,
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    // :hover в селекторе — чтобы запись была сильнее наведения при любом устройстве
+    &.is-listening,
+    &.is-listening:hover:not(:disabled) {
+      background: $color-rust;
+      color: $color-cream;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 44px;
+    border: 0;
+    border-radius: 22px;
+    background: $color-accent;
+    font: 700 15px $font-base;
+    color: $color-black;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.05);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-cream;
+      outline-offset: 3px;
+    }
+  }
+
+  &__transcript {
+    margin-top: 12px;
+    font-size: 15px;
+    font-style: italic;
+  }
+
+  &__preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 14px;
+
+    img {
+      width: 72px;
+      height: 54px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+  }
+
+  &__spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba($color-black, 0.25);
+    border-top-color: $color-black;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__examples {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  &__example {
+    padding: 4px 12px;
+    border: 1px solid rgba($color-cream, 0.5);
+    border-radius: 20px;
+    background: transparent;
+    font: inherit;
+    color: $color-cream;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $color-accent;
+      color: $color-accent;
+    }
+  }
+
+  &__status {
+    min-height: 20px;
+    margin-top: 10px;
+    font-size: 14px;
+    color: rgba($color-cream, 0.8);
+
+    &.is-error {
+      color: #ff9b8a;
+    }
+  }
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba($color-rust, 0.3);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

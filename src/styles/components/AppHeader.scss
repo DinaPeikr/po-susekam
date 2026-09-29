@@ -1,0 +1,220 @@
+// Стили AppHeader из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <header class="header" :class="{ 'is-scrolled': scrolled, 'has-back': showBack }">
+//     <div class="header__inner">
+//       <RouterLink class="logo" name>
+//         <svg class="logo__icon" viewBox="0 0 48 56" width="26" height="30"> <path class="logo__hat" d="M13 17c-4.5 0-7-3.2-7-6.5S8.8 4 12.5 4.6C13.8 2 16.6 0.5 19.5 1c1.6-0.7 3.3-1 5-1 2.7 0 5.2 1 6.8 2.6C34 1.8 37 2.6 38.6 5c3.4 0.4 5.4 3 5.4 6 0 3.4-2.7 6-7 6z" /> <rect class="logo__hat-band" x="12" y="15" width="26" height="5" rx="1.5" /> <rect class="logo__fridge" x="10" y="21" width="30" height="33" rx="5" /> <path class="logo__line" d="M10 33h30M15 26v4M15 37v7" /> <circle class="logo__eye" cx="21" cy="46" r="1.6" /> <circle class="logo__eye" cx="31" cy="46" r="1.6" /> <path class="logo__smile" d="M23 49.5q3 2.5 6 0" /> </svg>
+//         <span class="logo__text">
+//           <span class="logo__name">
+//           <span class="logo__slogan">
+//       <div class="header__actions">
+//         <RouterLink v-if="showBack" class="back">
+//           <svg viewBox="0 0 24 24"> <path d="M19 12H5M11 6l-6 6 6 6" /> </svg>
+//           <span>
+//             <span class="back__long">
+//         <RouterLink class="fav-link" :class="{ 'is-current': $route.name === 'favorites' }" name>
+//           <svg viewBox="0 0 24 24"> <path d="M12 20.5s-7.5-4.6-9.2-9.3C1.7 8 3.6 4.5 7.1 4.5c2 0 3.5 1.1 4.9 2.9 1.4-1.8 2.9-2.9 4.9-2.9 3.5 0 5.4 3.5 4.3 6.7-1.7 4.7-9.2 9.3-9.2 9.3z" /> </svg>
+//           <span class="fav-link__text">
+//           <span v-if="favoritesCount" class="fav-link__count">
+
+// Липкий хедер: при прокрутке остаётся сверху, лого и «Назад к рецептам» всегда под рукой
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-top: 6px solid $color-rust;
+  background: $color-black;
+  transition: background-color 0.2s, box-shadow 0.2s;
+
+  &.is-scrolled {
+    background: rgba($color-black, 0.72);
+    box-shadow: 0 4px 16px rgba($color-black, 0.35);
+    backdrop-filter: blur(10px);
+  }
+
+  // Та же ширина и отступы, что у поиска: лого стоит на одной вертикали с заголовком
+  &__inner {
+    @include content-column;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 8px;
+  }
+}
+
+.header__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.fav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-cream;
+  text-decoration: none;
+  transition: background-color 0.15s;
+
+  &:hover,
+  &.is-current {
+    background: rgba($color-cream, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: #ff5a4f;
+    stroke: #ff5a4f;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  // На телефоне остаются сердце и счётчик
+  &__text {
+    @include mobile {
+      display: none;
+    }
+  }
+
+  &__count {
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: $color-accent;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: $color-black;
+  }
+}
+
+.back {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 6px 10px;
+  border: 1px solid rgba($color-accent, 0.6);
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-accent;
+  text-decoration: none;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: rgba($color-accent, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  // На телефоне рядом с лого места мало — короткая подпись
+  &__long {
+    @include mobile {
+      display: none;
+    }
+  }
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+
+  &__icon {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  &:hover &__icon {
+    transform: rotate(-6deg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 4px;
+  }
+
+  &__hat {
+    fill: $color-cream;
+  }
+
+  &__hat-band {
+    fill: $color-cream;
+    stroke: $color-black;
+    stroke-width: 1.5;
+  }
+
+  &__fridge {
+    fill: $color-accent;
+  }
+
+  &__line,
+  &__smile {
+    fill: none;
+    stroke: $color-black;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  &__eye {
+    fill: $color-black;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: $font-logo;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: $color-accent;
+  }
+
+  &__slogan {
+    margin-top: 1px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: rgba($color-cream, 0.75);
+
+    // На телефоне рядом с кнопкой «Назад» слоган переносится на две строки и раздувает хедер
+    .has-back & {
+      @include mobile {
+        display: none;
+      }
+    }
+  }
+}

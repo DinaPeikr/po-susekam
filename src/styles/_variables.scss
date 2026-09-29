@@ -1,0 +1,40 @@
+// Colors
+$color-accent: #ffde67;
+$color-cream: #fff4cb;
+$color-rust: #9f4620;
+$color-maroon: #3c0202;
+$color-black: #000;
+$color-neutral-800: #2c2b2b;
+$color-neutral-400: #858585;
+
+// Typography
+$font-base: 'Inter', system-ui, sans-serif;
+$font-logo: 'Playfair Display', Georgia, serif;
+$fs-body: 16px;
+
+// Layout
+$content-width: 960px; // колонка контента: хедер, поиск, заголовки, начало карусели
+$gutter: 32px;
+$gutter-mobile: 20px;
+$card-width: 280px;
+$card-gap: 20px;
+$card-radius: 20px;
+
+// Breakpoints
+$bp-tablet: 1024px;
+$bp-mobile: 600px;
+
+@mixin tablet { @media (max-width: $bp-tablet) { @content; } }
+@mixin mobile { @media (max-width: $bp-mobile) { @content; } }
+
+// Центрированная колонка с полями — одна на все блоки, чтобы всё стояло на одной вертикали
+@mixin content-column {
+  width: 100%;
+  max-width: $content-width;
+  margin-inline: auto;
+  padding-inline: $gutter;
+
+  @include mobile {
+    padding-inline: $gutter-mobile;
+  }
+}

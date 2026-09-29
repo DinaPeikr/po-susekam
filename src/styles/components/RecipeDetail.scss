@@ -1,0 +1,289 @@
+// Стили RecipeDetail из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <article class="recipe">
+//     <div class="recipe__media">
+//       <img v-if="recipe.hero.image" class="recipe__hero">
+//       <div v-else class="recipe__hero recipe__hero--placeholder">
+//       <div class="recipe__actions">
+//         <button v-if="recipe.steps?.length" class="recipe__action is-primary">
+//           <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+//         <a class="recipe__action">
+//           <svg class="recipe__youtube" viewBox="0 0 24 24"> <rect x="2" y="5" width="20" height="14" rx="4" /> <path d="M10 9l5 3-5 3z" /> </svg>
+//         <FavoriteButton>
+//     <CookingMode v-if="cooking">
+//     <p v-if="recipe.photo" class="recipe__credit">
+//       <a>
+//       <a>
+//     <header class="recipe__header">
+//       <h1 class="recipe__title">
+//       <p class="recipe__lead">
+//       <ul v-if="facts.length" class="recipe__facts">
+//         <li v-for="fact in facts">
+//     <section>
+//       <h2 :class="isAi ? 'recipe__section-title' : 'visually-hidden'">
+//       <img v-if="recipe.ingredientsImage" class="recipe__figure">
+//       <ol class="recipe__ingredients" :class="{ 'recipe__ingredients--compact': isAi }">
+//         <li v-for="(item, index) in recipe.ingredients">
+//     <section>
+//       <h2 :class="isAi ? 'recipe__section-title' : 'visually-hidden'">
+//       <div v-if="recipe.stepImages?.length" class="recipe__steps-images" :class="{ 'recipe__steps-images--gallery': recipe.stepsGallery }">
+//         <img v-for="(step, index) in recipe.stepImages">
+//       <ol v-if="isAi" class="recipe__steps recipe__steps--list">
+//         <li v-for="(step, index) in recipe.steps">
+//       <div v-else class="recipe__steps">
+//         <p v-for="(step, index) in recipe.steps">
+//       <p v-if="recipe.tip" class="recipe__tip">
+
+// Та же колонка, что у хедера; текст уже — длинные строки тяжело читать
+.recipe {
+  @include content-column;
+  padding-block: 24px 48px;
+  color: $color-cream;
+
+  @include mobile {
+    padding-block: 16px 40px;
+  }
+
+  &__hero {
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+    aspect-ratio: 16 / 9;
+    border-radius: $card-radius;
+    object-fit: cover;
+  }
+
+  // Кнопки лежат на фото снизу, под ними затемнение — читаются на любой картинке
+  &__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: $card-radius;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      height: 50%;
+      background: linear-gradient(transparent, rgba($color-black, 0.65));
+      pointer-events: none;
+    }
+  }
+
+  &__actions {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    @include mobile {
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+    }
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 21px;
+    background: rgba($color-black, 0.6);
+    backdrop-filter: blur(6px);
+    font: 700 14px $font-base;
+    color: $color-cream;
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 0.15s;
+
+    @include mobile {
+      height: 38px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    &.is-primary {
+      background: $color-accent;
+      color: $color-black;
+    }
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-cream;
+      outline-offset: 2px;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+  }
+
+  // Узнаваемая красная плашка YouTube с белым треугольником
+  &__youtube {
+    rect {
+      fill: #f00;
+    }
+
+    path {
+      fill: #fff;
+    }
+  }
+
+  &__hero--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, $color-rust, $color-black);
+    font-size: 72px;
+
+    @include mobile {
+      font-size: 56px;
+    }
+  }
+
+  &__credit {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgba($color-cream, 0.7);
+
+    a {
+      color: inherit;
+    }
+  }
+
+  &__header {
+    max-width: 720px;
+    margin-top: 20px;
+  }
+
+  section {
+    max-width: 720px;
+  }
+
+  &__title {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    @include mobile {
+      font-size: 22px;
+    }
+  }
+
+  &__lead {
+    margin-top: 6px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: rgba($color-cream, 0.85);
+  }
+
+  &__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+
+    li {
+      padding: 5px 12px;
+      border-radius: 16px;
+      background: rgba($color-cream, 0.12);
+      font-size: 14px;
+    }
+  }
+
+  &__section-title {
+    margin-top: 28px;
+    font-size: 19px;
+    font-weight: 700;
+    color: $color-accent;
+  }
+
+  &__figure {
+    width: 100%;
+    height: auto;
+    margin-top: 16px;
+    border-radius: $card-radius;
+  }
+
+  &__ingredients,
+  &__steps {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  &__ingredients {
+    margin-top: 16px;
+    padding-left: 1.4em;
+
+    li + li {
+      margin-top: 4px;
+    }
+  }
+
+  // У AI-рецептов список сразу под заголовком секции — отдельный модификатор больше ничего не меняет
+  &__ingredients--compact {
+    margin-top: 12px;
+  }
+
+  &__steps-images {
+    margin-top: 24px;
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: $card-radius;
+    }
+
+    // Отдельные фото по шагам. У Waffles шаги склеены в две картинки с разделителями внутри
+    &--gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      img {
+        aspect-ratio: 940 / 800;
+        object-fit: cover;
+      }
+    }
+  }
+
+  &__steps {
+    margin-top: 24px;
+
+    p + p {
+      margin-top: 12px;
+    }
+
+    &--list {
+      margin-top: 12px;
+      padding-left: 1.4em;
+
+      li + li {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  &__tip {
+    margin-top: 28px;
+    padding: 14px 18px;
+    border-left: 4px solid $color-accent;
+    border-radius: 0 12px 12px 0;
+    background: rgba($color-cream, 0.08);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}

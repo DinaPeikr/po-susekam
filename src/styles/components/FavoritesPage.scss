@@ -1,0 +1,67 @@
+// Стили FavoritesPage из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <main class="favorites-page">
+//     <div class="favorites">
+//       <h1 class="favorites__title">
+//       <p v-if="!favorites.list.length" class="favorites__empty">
+//         <RouterLink name>
+//       <p class="favorites__hint">
+//       <TransitionGroup tag="div" name="fade" class="favorites__grid">
+//         <RecipeCard v-for="recipe in favorites.list">
+
+// Бордовый фон на всю ширину, контент — в общей колонке
+.favorites-page {
+  flex: 1;
+  background: $color-maroon;
+}
+
+.favorites {
+  @include content-column;
+  padding-block: 24px 40px;
+  color: $color-cream;
+
+  &__title {
+    font-family: $font-logo;
+    font-size: 24px;
+    font-weight: 800;
+    color: $color-accent;
+  }
+
+  &__hint,
+  &__empty {
+    margin-top: 6px;
+    font-size: 14px;
+    color: rgba($color-cream, 0.75);
+  }
+
+  &__empty {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+
+    a {
+      display: inline-block;
+      margin-left: 4px;
+      font-weight: 700;
+      color: $color-accent;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: $card-gap;
+    margin-top: 16px;
+  }
+}
+
+.fade-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}

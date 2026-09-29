@@ -1,0 +1,18 @@
+// Стили AppFooter из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <footer class="footer">
+//     <p class="footer__copy">
+
+.footer {
+  padding: 16px $gutter-mobile;
+  border-bottom: 6px solid $color-rust;
+  background: $color-black;
+
+  &__copy {
+    font-size: 13px;
+    text-align: center;
+    color: rgba($color-cream, 0.6);
+  }
+}

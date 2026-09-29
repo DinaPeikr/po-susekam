@@ -1,0 +1,13 @@
+name = "po-susekam"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+RECIPES_COUNT = "6"
+# Поиск + одно «Ещё рецепты» = 12 рецептов и 12 фото — бережём лимит Unsplash
+SEARCH_ROUNDS = "2"
+
+# Whisper для голоса там, где нет Web Speech (Firefox) или он падает (Brave)
+[ai]
+binding = "AI"

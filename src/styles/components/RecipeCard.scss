@@ -1,0 +1,128 @@
+// Стили RecipeCard из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <article class="card">
+//     <img v-if="recipe.card.image" class="card__image">
+//     <div v-else class="card__image card__image--placeholder">
+//     <FavoriteButton class="card__favorite">
+//     <div class="card__body">
+//       <h2 class="card__title">
+//       <p class="card__text">
+//         <br>
+//       <p v-if="meta" class="card__meta">
+//       <RouterLink class="card__button" name>
+
+// Кликается вся карточка: ссылка одна (кнопка), её ::after растянут на карточку — см. &__button
+.card {
+  position: relative;
+  display: flex;
+  flex: 0 0 $card-width;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: 0 6px 18px rgba($color-black, 0.35);
+      transform: translateY(-2px);
+    }
+  }
+  border-radius: $card-radius;
+  background: $color-cream;
+  scroll-snap-align: start;
+
+  @include mobile {
+    flex-basis: min(#{$card-width}, calc(100vw - 56px));
+  }
+
+  &__favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+  }
+
+  &__image {
+    flex-shrink: 0;
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, $color-rust, $color-maroon);
+      font-size: 40px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px 16px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: $color-neutral-800;
+  }
+
+  &__text {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $color-neutral-800;
+  }
+
+  &__meta {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: $color-rust;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto 0 0;
+    padding: 6px 16px;
+    border-radius: 16px;
+    background: $color-black;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: normal;
+    color: $color-accent;
+    text-decoration: none;
+
+    // Невидимая область ссылки на всю карточку: на телефоне не надо целиться в маленькую кнопку
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    // Фокус с клавиатуры подсвечивает всю карточку — она и есть область клика
+    &:focus-visible {
+      outline: none;
+
+      &::after {
+        border-radius: $card-radius;
+        outline: 3px solid $color-rust;
+        outline-offset: -3px;
+      }
+    }
+  }
+
+  // Кнопка прижата к низу через margin-top: auto; длинный текст не должен упираться в неё вплотную
+  &__body > :nth-last-child(2) {
+    margin-bottom: 12px;
+  }
+}

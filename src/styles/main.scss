@@ -1,0 +1,49 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// iOS: докрутили карусель до конца — остаток жеста не должен дёргать всю страницу вбок
+html {
+  overscroll-behavior-x: none;
+}
+
+body {
+  margin: 0;
+  font-family: $font-base;
+  background: $color-black;
+}
+
+// Футер прижат к низу, контент страницы растягивается
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

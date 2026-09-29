@@ -1,0 +1,63 @@
+// Стили ScrollTopButton из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <Transition name="scroll-top">
+//     <button v-if="visible" class="scroll-top">
+//       <svg viewBox="0 0 24 24"> <path d="M12 19V5M5 12l7-7 7 7" /> </svg>
+
+.scroll-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: $color-accent;
+  box-shadow: 0 4px 14px rgba($color-black, 0.4);
+  color: $color-black;
+  cursor: pointer;
+
+  @include mobile {
+    right: 16px;
+    bottom: 16px;
+    width: 46px;
+    height: 46px;
+  }
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-cream;
+    outline-offset: 3px;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.scroll-top-enter-active,
+.scroll-top-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.scroll-top-enter-from,
+.scroll-top-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}

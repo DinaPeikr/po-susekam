@@ -1,0 +1,330 @@
+// Стили CookingMode из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <dialog class="cooking">
+//     <div class="cooking__backdrop">
+//     <div class="cooking__inner">
+//       <header class="cooking__top">
+//         <p class="cooking__title">
+//         <button v-for="item in otherTimers" class="cooking__mini-timer" :class="{ 'is-done': item.done }">
+//         <button class="cooking__close">
+//           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+//       <div class="cooking__progress">
+//         <p>
+//         <div class="cooking__bar">
+//           <div class="cooking__bar-fill">
+//       <section class="cooking__stage">
+//         <Transition>
+//           <div class="cooking__step">
+//             <span class="cooking__icon">
+//             <p class="cooking__text">
+//             <div v-if="step.timerSeconds" class="cooking__timer">
+//               <p class="cooking__time" :class="{ 'is-done': currentTimer.done }">
+//               <div class="cooking__timer-actions">
+//                 <button v-if="!currentTimer.done" class="cooking__chip">
+//                 <button class="cooking__chip">
+//               <button v-else class="cooking__start">
+//             <p v-if="isLast && tip" class="cooking__tip">
+//       <footer class="cooking__nav">
+//         <button class="cooking__nav-button">
+//           <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+//         <button v-if="!isLast" class="cooking__nav-button is-primary">
+//           <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+//         <button v-else class="cooking__nav-button is-primary">
+
+.cooking {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; // размытый фон выступает за края на 40px
+  border: 0;
+  background: $color-maroon;
+  color: $color-cream;
+
+  &::backdrop {
+    background: rgba($color-black, 0.6);
+  }
+
+  // Фото блюда размытым фоном, поверх — затемнение, чтобы текст читался
+  &__backdrop {
+    position: absolute;
+    inset: -40px;
+    background: linear-gradient(135deg, $color-rust, $color-maroon) center / cover;
+    filter: blur(24px) brightness(0.35);
+  }
+
+  &__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px $gutter 20px;
+
+    @include mobile {
+      padding-inline: $gutter-mobile;
+    }
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: rgba($color-cream, 0.85);
+  }
+
+  &__mini-timer {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba($color-accent, 0.18);
+    font: 600 13px $font-base;
+    color: $color-accent;
+    cursor: pointer;
+
+    &.is-done {
+      background: $color-accent;
+      color: $color-black;
+      animation: blink 1s ease-in-out infinite;
+    }
+  }
+
+  &__close {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba($color-cream, 0.12);
+    color: $color-cream;
+    cursor: pointer;
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  &__progress {
+    margin-top: 16px;
+    font-size: 13px;
+    color: rgba($color-cream, 0.75);
+  }
+
+  &__bar {
+    height: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba($color-cream, 0.15);
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: $color-accent;
+    transition: width 0.25s;
+  }
+
+  // Шаг по центру оставшегося места; длинный текст прокручивается внутри, кнопки остаются внизу
+  &__stage {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-height: 0;
+    overflow-y: auto;
+    // overflow-y: auto делает и overflow-x auto: сдвиг шага на 40px в анимации включал горизонтальный скролл
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+
+  &__step {
+    width: 100%;
+    padding-block: 24px;
+    text-align: center;
+  }
+
+  &__icon {
+    display: block;
+    font-size: 64px;
+    line-height: 1;
+
+    @include mobile {
+      font-size: 52px;
+    }
+  }
+
+  &__text {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.45;
+
+    @include mobile {
+      font-size: 20px;
+    }
+  }
+
+  &__timer {
+    margin-top: 24px;
+  }
+
+  &__start {
+    padding: 12px 24px;
+    border: 2px solid $color-accent;
+    border-radius: 24px;
+    background: transparent;
+    font: 700 16px $font-base;
+    color: $color-accent;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba($color-accent, 0.12);
+    }
+  }
+
+  &__time {
+    font-size: 56px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: $color-accent;
+
+    &.is-done {
+      font-size: 36px;
+      animation: blink 1s ease-in-out infinite;
+    }
+  }
+
+  &__timer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  &__chip {
+    padding: 8px 18px;
+    border: 1px solid rgba($color-cream, 0.4);
+    border-radius: 18px;
+    background: transparent;
+    font: 600 14px $font-base;
+    color: $color-cream;
+    cursor: pointer;
+  }
+
+  &__tip {
+    margin-top: 28px;
+    padding: 14px 18px;
+    border-left: 4px solid $color-accent;
+    border-radius: 0 12px 12px 0;
+    background: rgba($color-cream, 0.08);
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 12px;
+  }
+
+  &__nav-button {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 52px;
+    border: 1px solid rgba($color-cream, 0.35);
+    border-radius: 26px;
+    background: transparent;
+    font: 700 16px $font-base;
+    color: $color-cream;
+    cursor: pointer;
+
+    &.is-primary {
+      flex: 2;
+      border-color: $color-accent;
+      background: $color-accent;
+      color: $color-black;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  button:focus-visible {
+    outline: 2px solid $color-cream;
+    outline-offset: 3px;
+  }
+
+  svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// Шаг уезжает в сторону листания
+.step-next-enter-active,
+.step-next-leave-active,
+.step-prev-enter-active,
+.step-prev-leave-active {
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.step-next-enter-from,
+.step-prev-leave-to {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.step-next-leave-to,
+.step-prev-enter-from {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-next-enter-active,
+  .step-next-leave-active,
+  .step-prev-enter-active,
+  .step-prev-leave-active {
+    transition: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.55;
+  }
+}

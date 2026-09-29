@@ -1,0 +1,139 @@
+// Стили HomePage из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <main class="home">
+//     <RecipeSearch>
+//     <h2 class="home__heading">
+//     <p v-if="isEmpty" class="home__empty">
+//     <RecipeCarousel v-if="!isEmpty" class="home__carousel">
+//       <div v-for="n in 3" class="skeleton">
+//       <RecipeCard v-for="recipe in search.results">
+//       <div v-for="n in (loadingMore ? 3 : 0)" class="skeleton">
+//     <div v-if="hasResults" class="home__more">
+//       <button class="home__more-button" :class="{ 'is-exhausted': !search.canLoadMore && !loadingMore }">
+//         <span v-if="loadingMore" class="home__spinner">
+//         <svg v-else viewBox="0 0 24 24"> <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" /> </svg>
+//       <p class="home__more-status">
+
+.home {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: $color-maroon;
+
+  &__heading {
+    @include content-column;
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: $color-cream;
+  }
+
+  &__empty {
+    @include content-column;
+    margin-top: 8px;
+    font-size: 15px;
+    color: rgba($color-cream, 0.8);
+  }
+
+  // Над каруселью теперь панель поиска — большой отступ из макета не нужен
+  &__carousel {
+    --carousel-padding-top: 12px;
+    flex: 0 0 auto;
+  }
+
+  &__more {
+    @include content-column;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding-block: 16px 28px;
+  }
+
+  &__more-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    border: 1px solid $color-accent;
+    border-radius: 20px;
+    background: transparent;
+    font: 600 14px $font-base;
+    color: $color-accent;
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    &:hover:not(:disabled) {
+      background: rgba($color-accent, 0.12);
+    }
+
+    // Идёт подбор — кнопка занята, но живая: крутится спиннер
+    &:disabled {
+      cursor: default;
+    }
+
+    // Лимит исчерпан — кнопка почти растворяется, чтобы было видно, что она больше не работает
+    &.is-exhausted {
+      border-color: rgba($color-cream, 0.25);
+      color: rgba($color-cream, 0.3);
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-cream;
+      outline-offset: 3px;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  &__more-status {
+    font-size: 13px;
+    color: rgba($color-cream, 0.75);
+  }
+
+  &__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba($color-accent, 0.3);
+    border-top-color: $color-accent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+.skeleton {
+  flex: 0 0 $card-width;
+  height: 290px;
+  border-radius: $card-radius;
+  background: linear-gradient(100deg, rgba($color-cream, 0.12) 30%, rgba($color-cream, 0.24) 50%, rgba($color-cream, 0.12) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+
+  @include mobile {
+    flex-basis: min(#{$card-width}, calc(100vw - 56px));
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

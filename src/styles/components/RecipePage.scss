@@ -1,0 +1,32 @@
+// Стили RecipePage из рабочей версии 23.09.2026 — копировать как есть в <style scoped lang="scss">.
+// Ниже разметка: только теги, классы и SVG-иконки (логику писать по SPEC.md, имена полей данных — свои).
+// Классы, вложенность и имена Transition держать такими же, иначе стили не лягут.
+//
+//   <main class="recipe-page">
+//     <RecipeDetail v-if="recipe">
+//     <div v-else class="recipe-page__empty">
+//       <h1>
+//       <RouterLink name>
+
+// Бордовый фон на всю ширину, контент рецепта ограничен 1280px внутри RecipeDetail
+.recipe-page {
+  flex: 1;
+  background: $color-maroon;
+
+  &__empty {
+    padding: 80px 20px;
+    text-align: center;
+    color: $color-cream;
+
+    h1 {
+      font-size: 28px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 17px;
+      color: $color-accent;
+    }
+  }
+}
