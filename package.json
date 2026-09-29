@@ -7,7 +7,8 @@
     "dev": "vite",
     "dev:api": "wrangler pages dev --port 8788",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "eval": "node evals/run.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

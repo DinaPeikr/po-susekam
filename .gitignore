@@ -4,3 +4,4 @@ dist
 .wrangler
 shots
 .wrangler-dev.log
+evals/results

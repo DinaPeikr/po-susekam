@@ -126,9 +126,11 @@ export default {
       const next = mergeIngredients(this.modelValue, items);
       const added = next.slice(this.modelValue.length);
       this.$emit('update:modelValue', next);
-      this.$emit('status', added.length
-        ? { text: `Добавили: ${added.join(', ')}. Можно добавить ещё или нажать «Подобрать блюда»`, error: false }
-        : { text: 'Новых продуктов не нашлось — они уже в списке или не распознались', error: false });
+      // Пустой ответ распознавания — съедобного не нашлось совсем; иначе всё уже было в списке
+      let text = `Добавили: ${added.join(', ')}. Можно добавить ещё или нажать «Подобрать блюда»`;
+      if (!items.length) text = 'Съедобных продуктов не нашли — назовите или сфотографируйте продукты';
+      else if (!added.length) text = 'Эти продукты уже в списке — можно добавить ещё или нажать «Подобрать блюда»';
+      this.$emit('status', { text, error: false });
     },
 
     async onPhoto(event) {
