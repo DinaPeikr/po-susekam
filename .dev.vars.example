@@ -1,0 +1,10 @@
+# Скопируйте в .dev.vars и впишите свои ключи. .dev.vars в .gitignore — ключи не попадут в git.
+
+# Обязательно. Подбор рецептов и распознавание продуктов: https://console.anthropic.com/settings/keys
+ANTHROPIC_API_KEY=
+
+# Необязательно: без обоих ключей карточки показываются без фото (градиент).
+# Unsplash: https://unsplash.com/oauth/applications → New Application → Access Key
+UNSPLASH_ACCESS_KEY=
+# Pexels, запасной источник: https://www.pexels.com/api/key/
+PEXELS_API_KEY=

@@ -53,15 +53,16 @@ Vue 3 + Vite  ── /api/* ──►  Cloudflare Pages Functions  ──►  Cl
 
 ## Запуск локально
 
-Нужны Node.js 20+ и аккаунт Cloudflare (`npx wrangler login`).
+Нужны Node.js 20+ и бесплатный аккаунт Cloudflare (`npx wrangler login`): голос в Firefox и Brave
+распознаёт Whisper на Workers AI вашего аккаунта.
 
-1. Создайте в корне файл `.dev.vars` (он в `.gitignore`):
+1. Скопируйте шаблон ключей и впишите свои:
    ```
-   ANTHROPIC_API_KEY=...
-   UNSPLASH_ACCESS_KEY=...
-   PEXELS_API_KEY=...
+   cp .dev.vars.example .dev.vars
    ```
-2. Установите зависимости и соберите фронт:
+   Обязателен только `ANTHROPIC_API_KEY`. Без ключей Unsplash и Pexels карточки будут без фото.
+   `.dev.vars` в `.gitignore`, в git он не попадёт.
+2. Установите зависимости и соберите фронт (функции отдают собранный `dist/`):
    ```
    npm install
    npm run build
@@ -71,6 +72,10 @@ Vue 3 + Vite  ── /api/* ──►  Cloudflare Pages Functions  ──►  Cl
    npm run dev:api   # функции на http://127.0.0.1:8788
    npm run dev       # Vite на http://localhost:5173, /api проксируется на 8788
    ```
+4. Откройте http://localhost:5173.
+
+На Windows распакуйте проект в папку с коротким путём (например, `D:\po-susekam`): локальный кэш wrangler
+лежит глубоко в `.wrangler/state`, и при длинном пути `/api/photo` падает с 500 (лимит Windows — 260 символов).
 
 Голос локально ходит в настоящий Workers AI вашего аккаунта. Запасной путь записи можно проверить в Chrome,
 добавив к адресу `?voice=record`.
